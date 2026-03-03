@@ -2,8 +2,8 @@
 # Copyright (C) 2015 Oleh Prypin <blaxpirit@gmail.com>
 # Licensed under terms of MIT license (see LICENSE)
 
-from std/sequtils import deduplicate, delete, filter_it
-import std/[options, os, tables]
+from std/sequtils import deduplicate, delete, filter_it, map_it
+import std/[options, os, strutils, tables]
 import regex
 import docopt/util
 
@@ -522,13 +522,21 @@ proc parse_argv(tokens: TokenStream, options: var seq[Option],
   ##     argv ::= [ long | shorts ]* [ argument ]* [ '--' [ argument ]* ] ;
   ## else:
   ##     argv ::= [ long | shorts | argument ]* [ '--' [ argument ]* ] ;
+  proc is_number(s: string): bool =
+    try:
+      discard parseFloat(s)
+      true
+    except ValueError:
+      false
+
   result = @[]
   while tokens.current != "":
     if tokens.current == "--":
       return result & @tokens.map_it(Pattern, argument("", val(it)))
     elif tokens.current.starts_with "--":
       result.add parse_long(tokens, options)
-    elif (tokens.current.starts_with "-") and tokens.current != "-":
+    elif (tokens.current.starts_with "-") and tokens.current != "-" and
+         not is_number(tokens.current):
       result.add parse_shorts(tokens, options)
     elif options_first:
       return result & @tokens.map_it(Pattern, argument("", val(it)))
@@ -557,6 +565,64 @@ proc printable_usage(doc: string): string =
   usage_split.join().split_incl(re"\n\s*\n")[0].strip()
 
 
+type DocSections = tuple[before_usage, usage_header, usage_body, after_usage: string]
+
+proc parse_doc_sections(doc: string): DocSections =
+  var usage_start = -1
+  var usage_end = -1
+  var usage_count = 0
+  var pos = 0
+  while pos < doc.len:
+    let line_end_pos = doc.find('\n', pos)
+    let line_last = if line_end_pos < 0: doc.high else: line_end_pos - 1
+    let line = doc[pos .. line_last]
+
+    var m: RegexMatch
+    if line.find(re"(?i)(\busage:)", m):
+      usage_count += 1
+      if usage_count == 1:
+        usage_start = pos
+        usage_end = pos + m.group(0)[0].b
+
+    if line_end_pos < 0:
+      pos = doc.len
+    else:
+      pos = line_end_pos + 1
+
+  if usage_count == 0:
+    raise new_exception(DocoptLanguageError,
+      "\"usage:\" (case-insensitive) not found.")
+  if usage_count > 1:
+    raise new_exception(DocoptLanguageError,
+      "More than one \"usage:\" (case-insensitive).")
+
+  let first_line_end_pos = doc.find('\n', usage_start)
+  let first_line_last = if first_line_end_pos < 0: doc.high else: first_line_end_pos - 1
+
+  result.before_usage = if usage_start > 0: doc[0 ..< usage_start] else: ""
+  result.usage_header = doc[usage_start .. usage_end]
+  result.usage_body = if usage_end < first_line_last:
+    doc[usage_end + 1 .. first_line_last] & "\n"
+  else:
+    "\n"
+
+  var next_line_start = first_line_last + 2
+  while next_line_start < doc.len and doc[next_line_start] in {' ', '\t'}:
+    let next_line_end = doc.find('\n', next_line_start)
+    let next_line_last = if next_line_end < 0: doc.high else: next_line_end - 1
+    result.usage_body &= doc[next_line_start .. next_line_last] & "\n"
+    if next_line_end < 0:
+      next_line_start = doc.len
+    else:
+      next_line_start = next_line_end + 1
+
+  result.after_usage =
+    if next_line_start < doc.len: doc[next_line_start .. ^1] else: ""
+
+  if result.usage_body.strip() == "":
+    raise new_exception(DocoptLanguageError, "\"usage:\" section is empty.")
+
+
 proc formal_usage(printable_usage: string): string =
   var pu = printable_usage.split_whitespace()
   pu.delete(0)
@@ -578,18 +644,20 @@ proc extras(help: bool, version: string, options: seq[Pattern], doc: string) =
 proc docopt_exc(doc: string, argv: seq[string], help: bool, version: string,
                 options_first = false): Table[string, Value] {.gcsafe.} =
   var doc = doc.replace("\r\l", "\l")
+  let sections = parse_doc_sections(doc)
 
   var docopt_exit = new_exception(DocoptExit, "")
-  docopt_exit.usage = printable_usage(doc)
+  docopt_exit.usage = sections.usage_header & sections.usage_body
 
-  var options = parse_defaults(doc)
+  var options = parse_defaults(sections.before_usage & sections.after_usage)
   var pattern = parse_pattern(formal_usage(docopt_exit.usage), options)
 
   var argvt = parse_argv(token_stream(argv, docopt_exit), options,
                          options_first)
   var pattern_options = pattern.flat("Option").deduplicate()
   for any_options in pattern.flat("AnyOptions"):
-    var doc_options = parse_defaults(doc).deduplicate()
+    var doc_options = parse_defaults(sections.before_usage &
+                                     sections.after_usage).deduplicate()
     any_options.children = doc_options.filter_it(
       it notin pattern_options).map_it(Pattern, Pattern(it))
 
@@ -603,6 +671,9 @@ proc docopt_exc(doc: string, argv: seq[string], help: bool, version: string,
     for a in collected:
       result[a.name] = a.value
   else:
+    if left.len > 0:
+      docopt_exit.msg = "Warning: found unmatched (duplicate?) arguments [" &
+                       left.map_it(string, it.str).join(", ") & "]"
     raise docopt_exit
 
 
