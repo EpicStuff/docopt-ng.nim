@@ -265,9 +265,9 @@ proc option_parse[T](
     else:
       argcount = 1
   if argcount > 0:
-    var m: RegexMatch
-    if description.find(re"(?i)\[default:\ (.*)\]", m):
-      let bounds = m.group(0)[0]
+    var m: RegexMatch2
+    if description.find(re2"(?i)\[default:\ (.*)\]", m):
+      let bounds = m.group(0)
       value = val(description.substr(bounds.a, bounds.b))
     else:
       value = val()
@@ -437,7 +437,7 @@ proc parse_expr(tokens: TokenStream, options: var seq[Option]): seq[
 
 proc parse_pattern(source: string, options: var seq[Option]): Required =
   var tokens = token_stream(
-    source.replace(re"([\[\]\(\)\|]|\.\.\.)", r" $1 "),
+    source.replace(re2"([\[\]\(\)\|]|\.\.\.)", r" $1 "),
     new_exception(DocoptLanguageError, "")
   )
   let ret = parse_expr(tokens, options)
@@ -545,7 +545,7 @@ proc parse_argv(tokens: TokenStream, options: var seq[Option],
 
 
 proc parse_defaults(doc: string): seq[Option] =
-  var split = doc.split_incl(re"\n\ *(<\S+?>|-\S+?)")
+  var split = doc.splitIncl(re2"\n\ *(<\S+?>|-\S+?)")
   result = @[]
   for i in 1 .. split.len div 2:
     var s = split[i*2-1] & split[i*2]
@@ -554,7 +554,7 @@ proc parse_defaults(doc: string): seq[Option] =
 
 
 proc printable_usage(doc: string): string =
-  var usage_split = doc.split_incl(re"(?i)(Usage:)")
+  var usage_split = doc.splitIncl(re2"(?i)(Usage:)")
   if usage_split.len < 3:
     raise new_exception(DocoptLanguageError,
         """"usage:" (case-insensitive) not found.""")
@@ -562,7 +562,7 @@ proc printable_usage(doc: string): string =
     raise new_exception(DocoptLanguageError,
         """More than one "usage:" (case-insensitive).""")
   usage_split.delete(0)
-  usage_split.join().split_incl(re"\n\s*\n")[0].strip()
+  usage_split.join().splitIncl(re2"\n\s*\n")[0].strip()
 
 
 type DocSections = tuple[before_usage, usage_header, usage_body, after_usage: string]
@@ -577,12 +577,12 @@ proc parse_doc_sections(doc: string): DocSections =
     let line_last = if line_end_pos < 0: doc.high else: line_end_pos - 1
     let line = doc[pos .. line_last]
 
-    var m: RegexMatch
-    if line.find(re"(?i)(\busage:)", m):
+    var m: RegexMatch2
+    if line.find(re2"(?i)(\busage:)", m):
       usage_count += 1
       if usage_count == 1:
         usage_start = pos
-        usage_end = pos + m.group(0)[0].b
+        usage_end = pos + m.group(0).b
 
     if line_end_pos < 0:
       pos = doc.len

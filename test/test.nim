@@ -1,4 +1,4 @@
-import std/[json, strutils, tables, options]
+import std/[json, os, strutils, tables, options]
 
 include docopt
 
@@ -39,7 +39,12 @@ var doc: string
 var in_doc = false
 var total, passed = 0
 
-const tests = static_read("testcases.docopt")
+let tests_path =
+  if file_exists("testcases.docopt"):
+    "testcases.docopt"
+  else:
+    "test/testcases.docopt"
+let tests = readFile(tests_path)
 for each_line in (tests & "\n\n").split_lines():
   var line = each_line.partition("#").left
   if not in_doc and line.starts_with("r\"\"\""):
