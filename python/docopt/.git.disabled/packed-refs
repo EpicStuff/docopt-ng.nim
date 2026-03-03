@@ -1,0 +1,30 @@
+# pack-refs with: peeled fully-peeled sorted 
+5f08e0b412fc9fec3a73dd47bc26044dae66a013 refs/remotes/origin/0.6.x
+4e148e44291048c56f8478d6a1cf11ffa8b04901 refs/remotes/origin/call-module
+6e6dac041216a4f2cdee23fb071c83bb7ec54bfb refs/remotes/origin/delegation
+32e7d40b8ee71801c64da9905f38ecdbc2596d93 refs/remotes/origin/error-messages
+de53bfd29d3efb96a25517c95beb6e9c107e632b refs/remotes/origin/fix-travis-tests
+8fea867d4220f1095dae9d6264ec5aa4031fb712 refs/remotes/origin/master
+a71ecc63f7ae782e7780278b2caf73779576deef refs/remotes/origin/moving-tests-to-agnostic
+78b8aeac0fc551787729458cd4faae9fbcf7674a refs/remotes/origin/peg-parser
+2dd4c54c26e1f2292a4fc1c5e34d927ca0be0a90 refs/tags/0.1.0
+^387ccebcad588a6207c7b122cf500c97634f46d2
+48f295b8a85b04c46cb245c79034da0bdec5e70b refs/tags/0.1.1
+^38b5eb4ea454710dbc51a2014d34856e5aa1f786
+4100fd20979a742b615254db1b7c102455fb8544 refs/tags/0.2.0
+^922f4dea8da12fb08c9ca566493bd4a8ed63efac
+48576c1ef79f9722ae2574e1294df963c0d3e83e refs/tags/0.3.0
+^bec33023a5b133d770d872d8bfa9fd66ea4bf12b
+1ff2e8bffef3f78bc99921b8bf3f85ff3273db85 refs/tags/0.4.0
+^5b92eccf7db3a3477ac37f8a6cb9bf4894d63d37
+c063e8ad13e7e3a5646a0b0a980916edc7fb1b1b refs/tags/0.4.1
+^d4101183c841e5b9c639281f6103aa26fb88f06e
+42de48f1d47ff82f19760c90bc262484e5425dea refs/tags/0.4.2
+^770f9db16b32c656431a6db937330abf5f00676d
+e30f365f41de1c65dacdf037964522de1ed25998 refs/tags/0.5.0
+^c2ccb3a036b1defd74ae4f6f2940f3113891f56a
+aa85199e0be41ecd5568ca71670a68ad47e52b31 refs/tags/0.6.0
+^ebcbca042e63c470ec7836ac0f3e419293bcf242
+ee86d5bb6cfbe9a2334e0e99f5001ae09a4c9d9b refs/tags/0.6.1
+^940b1eb28175c0e4855a1e3b529cdf97309aa634
+944641a7357376a43151bd4a3ca44f9c07c4d1ae refs/tags/0.6.2
