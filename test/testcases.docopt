@@ -907,3 +907,31 @@ $ prog -pHOME
 r"""Usage: foo (--xx=x|--yy=y)..."""
 $ prog --xx=1 --yy=2
 {"--xx": ["1"], "--yy": ["2"]}
+
+r"""
+zxv
+a basic desc of zxv.
+
+Usage:
+  zxv <command> [<args>...]
+  zxv -h, --help
+  zxv --version
+
+Commands:
+  format, f   [-v] <input> [-o <output>]
+  compile, c  [-v] [-t <folder>] <input> [-o <output>] [-- <args>...]
+  run, r      [-v] [-t <folder>] <input> [-o <output>] [-- <args>...]
+  convert, C  [-v] [-f <format>] [-t <folder>] <input> [-o <output>] [-- <args>...]
+
+Options:
+  -h, --help                 Show this.
+  --version                  Show version.
+  -v, --verbose              Enable verbose output.
+  -o, --output <output>      Specify output file.
+  -t, --tmp_folder <folder>  Specify temporary folder. [default: {temp}]
+  -f, --format <format>      Specify output format. [default: nim]
+
+  Arguments after -- are passed onto nim.
+"""
+$ zxv -v c
+"user-error"

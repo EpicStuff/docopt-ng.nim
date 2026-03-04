@@ -57,9 +57,10 @@ for each_line in (tests & "\n\n").split_lines():
       doc = doc[0 .. doc.len-4]
       in_doc = false
     doc &= "\n"
-  elif line.starts_with("$ prog"):
+  elif line.starts_with("$ "):
     assert args.is_none and expected.is_none
-    args = some(line.substr(7))
+    let cmd = line.substr(2).split_whitespace()
+    args = some(if cmd.len > 1: cmd[1..^1].join(" ") else: "")
   elif line.starts_with("{") or line.starts_with("\""):
     assert args.is_some and expected.is_none
     expected = some(line)
