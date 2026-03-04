@@ -40,6 +40,21 @@ $ prog --xxx
 
 r"""Usage: prog [options]
 
+	--all             All.
+	--path <path>     Path to files. [default: ./]
+
+"""
+$ prog
+{"--all": false,
+ "--path": "./"}
+
+$ prog --all --path home/
+{"--all": true,
+ "--path": "home/"}
+
+
+r"""Usage: prog [options]
+
 -v, --verbose  Verbose.
 
 """
