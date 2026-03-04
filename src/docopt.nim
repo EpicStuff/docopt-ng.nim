@@ -545,7 +545,7 @@ proc parse_argv(tokens: TokenStream, options: var seq[Option],
 
 
 proc parse_defaults(doc: string): seq[Option] =
-  var split = doc.splitIncl(re2"\n\ *(<\S+?>|-\S+?)")
+  var split = doc.splitIncl(re2"\n[ \t]*(<\S+?>|-\S+?)")
   result = @[]
   for i in 1 .. split.len div 2:
     var s = split[i*2-1] & split[i*2]
