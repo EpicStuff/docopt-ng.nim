@@ -940,3 +940,26 @@ $ zxv c -v
  "--help": 0,
  "--version": false,
  "-,": false}
+
+
+r"""
+convert input to another format
+
+Usage:
+  zxv C [-v] <input> [-f <format>] [-t <folder>] [-o <output>] [-- <args>...]
+  zxv C -h, --help
+
+Options:
+  -h, --help                 Show this.
+  -v, --verbose              Enable verbose output.
+  -o, --output <output>      Specify output file.
+  -f, --format <format>      Specify output format. [default: nim]
+  -t, --tmp_folder <folder>  Specify temporary folder. [default: /tmp]
+
+Arguments after -- are passed onto nim.
+"""
+$ zxv C in -o out
+{"<args>": [], "C": "C", "--": false, "--verbose": false, "<input>": "in", "--format": "nim", "--help": 0, "--tmp_folder": "/tmp", "--output": "out", "-,": false}
+
+$ zxv C in --format c++ -- some other args -& --flags
+{"<args>": ["some", "other", "args", "-&", "--flags"], "C": "C", "--": true, "--verbose": false, "<input>": "in", "--format": "c++", "--help": 0, "--tmp_folder": "/tmp", "--output": null, "-,": false}
