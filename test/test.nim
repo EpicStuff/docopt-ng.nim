@@ -3,6 +3,25 @@ import std/[json, os, strutils, tables, options]
 include docopt
 
 
+proc value_to_json(v: Value): JsonNode =
+  case v.kind
+    of vkNone:
+      newJNull()
+    of vkBool:
+      %v.to_bool
+    of vkInt:
+      %v.len
+    of vkStr:
+      %($v)
+    of vkList:
+      %(@v)
+
+proc output_to_json(output: Table[string, Value]): JsonNode =
+  result = newJObject()
+  for k, v in output.pairs:
+    result[k] = value_to_json(v)
+
+
 proc test(doc, args, expected_s: string): bool =
   var expected_json = parse_json(expected_s)
   var error = ""
@@ -18,7 +37,7 @@ proc test(doc, args, expected_s: string): bool =
           of JBool: val(v.bval)
           of JArray: val(v.elems.map_it(string, it.str))
           else: val()
-      error = "!= " & $output
+      error = "!= " & $output_to_json(output)
       assert expected == output
     except DocoptExit:
       error = "DocoptExit on valid input"
