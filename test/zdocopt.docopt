@@ -1,0 +1,56 @@
+r"""
+zxv
+a basic desc of zxv.
+
+Usage:
+	zxv [--verbose] <command> [<args>...]
+	zxv -h, --help
+	zxv --version
+
+Commands:
+	format, f   [-v] <input> [-o <output>]
+	compile, c  [-v] [-t <folder>] <input> [-o <output>] [-- <args>...]
+	run, r      [-v] [-t <folder>] <input> [-o <output>] [-- <args>...]
+	convert, C  [-v] [-f <format>] [-t <folder>] <input> [-o <output>] [-- <args>...]
+
+Options:
+	-h, --help                 Show this.
+	--version                  Show version.
+	-v, --verbose              Enable verbose output.
+	-o, --output <output>      Specify output file.
+	-t, --tmp_folder <folder>  Specify temporary folder. [default: {temp}]
+	-f, --format <format>      Specify output format. [default: nim]
+
+Arguments after -- are passed onto nim.
+"""
+$ zxv c -v
+{"--verbose": true, "<command>": "c", "<args>": [], "--help": 0, "--version": false, "-,": false}
+
+
+r"""
+convert input to another format
+
+Usage:
+	zxv C [-v] <input> [-f <format>] [-t <folder>] [-o <output>] [-- <args>...]
+	zxv C -h, --help
+
+Options:
+	-h, --help                 Show this.
+	-v, --verbose              Enable verbose output.
+	-o, --output <output>      Specify output file.
+	-f, --format <format>      Specify output format. [default: nim]
+	-t, --tmp_folder <folder>  Specify temporary folder. [default: /tmp]
+
+Arguments after -- are passed onto nim.
+"""
+$ zxv C in -o out
+{"<args>": [], "C": "C", "--": false, "--verbose": false, "<input>": "in", "--format": "nim", "--help": 0, "--tmp_folder": "/tmp", "--output": "out", "-,": false}
+
+$ zxv C in --format c++ -- some other args -& --flags
+{"<args>": ["some", "other", "args", "-&", "--flags"], "C": "C", "--": true, "--verbose": false, "<input>": "in", "--format": "c++", "--help": 0, "--tmp_folder": "/tmp", "--output": null, "-,": false}
+
+$ zxv C in -- test
+{"<args>": ["test"], "C": "C", "--": true, "--verbose": false, "<input>": "in", "--format": "nim", "--help": 0, "--tmp_folder": "/tmp", "--output": null, "-,": false}
+
+$ zxv C in -f c++ -- test
+{"<args>": ["test"], "C": "C", "--": true, "--verbose": false, "<input>": "in", "--format": "c++", "--help": 0, "--tmp_folder": "/tmp", "--output": null, "-,": false}
