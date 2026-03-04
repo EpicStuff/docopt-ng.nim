@@ -3,7 +3,7 @@ import std/[json, os, strutils, tables, options]
 include docopt
 
 
-proc value_to_json(v: Value): JsonNode =
+proc `%`(v: Value): JsonNode =
   case v.kind
     of vkNone:
       newJNull()
@@ -16,10 +16,10 @@ proc value_to_json(v: Value): JsonNode =
     of vkList:
       %(@v)
 
-proc output_to_json(output: Table[string, Value]): JsonNode =
+proc `%`(output: Table[string, Value]): JsonNode =
   result = newJObject()
   for k, v in output.pairs:
-    result[k] = value_to_json(v)
+    result[k] = %v
 
 
 proc test(doc, args, expected_s: string): bool =
@@ -37,7 +37,7 @@ proc test(doc, args, expected_s: string): bool =
           of JBool: val(v.bval)
           of JArray: val(v.elems.map_it(string, it.str))
           else: val()
-      error = "!= " & $output_to_json(output)
+      error = "!= " & $(%output)
       assert expected == output
     except DocoptExit:
       error = "DocoptExit on valid input"
