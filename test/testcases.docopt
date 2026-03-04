@@ -913,7 +913,7 @@ zxv
 a basic desc of zxv.
 
 Usage:
-  zxv <command> [<args>...]
+  zxv [--verbose] <command> [<args>...]
   zxv -h, --help
   zxv --version
 
@@ -933,5 +933,10 @@ Options:
 
   Arguments after -- are passed onto nim.
 """
-$ zxv -v c
-"user-error"
+$ zxv c -v
+{"--verbose": true,
+ "<command>": "c",
+ "<args>": [],
+ "--help": 0,
+ "--version": false,
+ "-,": false}
